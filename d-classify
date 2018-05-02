@@ -1,0 +1,33 @@
+#!/bin/bash
+
+
+if [ -z "${1}" ]; then
+    echo "Usage: d-classify [objid]"
+    echo "    Prints 'running container', 'stopped container', or 'image *'"
+    echo "    If object doesn't exist, it's assumed to be an image."
+    return 1
+fi
+objid=${1}
+
+info=$(docker inspect ${objid} 2>/dev/null)
+if [ $? != 0 ]; then
+    echo "image (assumed - not found locally)"
+    exit 0
+else
+    echo $info | grep -s "RepoTags" > /dev/null
+
+    if [ $? -eq 0 ]; then  # it's an image
+        echo "image (exists locally)"
+        exit 0
+
+    else  # it's a container
+        echo $info | grep -s '"Running": true,' > /dev/null
+        if [ $? -eq 0 ]; then # it's running now
+            echo "running container"
+            exit 0
+        else
+            echo "stopped container"
+            exit 0
+        fi
+    fi
+fi

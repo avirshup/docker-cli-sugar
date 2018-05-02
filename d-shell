@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -e
+
+# https://stackoverflow.com/a/246128/1958900 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${DIR}/d-utils
+
+if [ -x ${1} ]; then
+    echo "USAGE: d-shell [image-or-container] [container options]"
+    exit 1
+fi
+
+objid=$1
+dockerargs=${@:2}
+objtype=$(d-classify ${objid})
+
+case "${objtype}" in
+    image*)
+        launch-shell-in-image "${objid}" ${dockerargs}
+        ;;
+    stopped*)
+        imagename="image-from-${objid}"
+        echocmd docker commit "${objid}" ${imagename}
+        launch-shell-in-image ${imagename} 
+        ;;
+    running*)
+        echo "Running 'docker exec ${dockerargs} -it ${objid} sh -c "${BASH_OR_SH}"'"
+        docker exec ${dockerargs} -it ${objid} sh -c "${BASH_OR_SH}"
+        ;;
+    *)
+        echo Failed to classify \"${objtype}\"
+        exit 1
+        ;;
+esac

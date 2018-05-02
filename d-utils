@@ -1,0 +1,19 @@
+#!/bin/bash
+
+BASH_OR_SH="(command -v bash >/dev/null 2>&1) && echo 'shell: bash' && bash || (echo 'shell: sh' && sh)"
+
+echocmd() {
+    echo Running \""$@"\"
+    $@
+}
+
+launch-shell-in-image() {
+    if [ -z "${1}" ]; then
+        echo "Usage: launch-shell-in-image [imgname] [...options to docker run]"
+        return 1
+    fi
+
+    echo Running \'docker run -it ${@} sh -c \"${BASH_OR_SH}\"\'
+    docker run -it ${@} sh -c "${BASH_OR_SH}"
+        
+}
