@@ -13,7 +13,7 @@ launch-shell-in-image() {
         return 1
     fi
 
-    echo Running \'docker run -it ${@} sh -c \"${BASH_OR_SH}\"\'
+    echo Running \'docker run -it --entrypoint=sh ${@:2} ${1} -c \"${BASH_OR_SH}\"\'
     docker run -it ${@} sh -c "${BASH_OR_SH}"
         
 }

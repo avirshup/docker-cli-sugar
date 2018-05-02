@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+# https://stackoverflow.com/a/246128/1958900 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${DIR}/d-utils
+
+
+for arg in $@; do
+    if [ "${arg:0:1}" == '-' ]; then
+        options=$options $arg
+    else
+        type=$(d-classify ${arg})
+        case "${type}" in
+            *container)
+                containers="${containers} ${arg}"
+                ;;
+            image*)
+                images="${images} ${arg}"
+                ;;
+            *)
+                echo Ignoring unrecognized argument \"${arg}\"
+                ;;
+        esac
+    fi
+done
+
+if [ -z "${images}${containers}" ]; then
+    echo "ERROR - no images or containers passed."
+    exit 1
+fi
+
+if [ ! -z "${containers}" ]; then
+    echocmd docker rm ${options} ${containers} 
+fi
+
+if [ ! -z "${images}" ]; then
+    echocmd docker rmi ${options} ${images} 
+fi
