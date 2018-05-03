@@ -27,7 +27,7 @@ Launch a shell in an image or container (whether running or stopped). Launches `
 [host]$ dshell running-container
 Running 'docker exec  -it running-container [...]'
 shell: sh
-[container]$ apk update
+[container]$ apk update  # or whatever
 [...]
 ```
 
@@ -35,8 +35,8 @@ shell: sh
 ```bash
 [host]$ dshell centos
 Running "docker run -it --entrypoint=sh centos"
-shell: sh
-[container]$ apk update
+shell: bash
+[container]$ yum update  # or whatever
 [...]
 ```
 
