@@ -56,14 +56,14 @@ hello.txt
 hello world
 ```
 
-### `drm [images-and-container-ids] [arguments for docker rmi]
+### `drm [images-and-container-ids] [arguments for docker rmi]`
 Remove images and/or containers
 
 ### Example
 ```bash
 [host]$ docker run alpine echo hello world --name removeme
 [host]$ drm alpine removeme
-
+```
 
 ### `dps`
 Alias for `docker ps`
