@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+mode='run'
+printusage() {
+    echo 'USAGE: lastcontainer [-l [N], N, -h, --help]'
+    echo '      Without arguments, launches shell in last container'
+    echo '      -l: list the last 10 stopped containers'
+    echo '      -l [N]: list the last N stopped containers'
+    echo '      [N]: launch shell in the Nth most recently stopped container (1=most recently stopped)'
+    exit 1
+}
+
+if [ "$1" == '-h' ] || [ "$1" == '--help' ]; then
+    printusage
+    exit 0
+fi
+
+lastn=1
+
+if [ "$1" == '-l' ]; then
+    mode='list'
+    lastn=10
+    if [ "$#" == 2 ]; then
+        lastn=$2
+    elif [ "$#" != 1 ]; then
+        echo "Failed to parse arguments."
+        printusage
+        exit 1
+    fi
+elif [ "$#" == 1 ]; then
+    lastn=$2
+elif [ "$#" != 0 ]; then
+    echo "Failed to parse arguments."
+    printusage
+    exit 1
+fi
+
+
+containerlist=$(docker ps -n ${lastn} -f status=exited)
+if [ ${mode} == 'list' ]; then
+    echo "${containerlist}"
+elif [ ${mode} == 'run' ]; then
+    container=$(echo "${containerlist}" | tail -n1 | awk '{print $1}')
+    dshell ${container}
+fi
