@@ -44,4 +44,7 @@ if [ ${mode} == 'list' ]; then
 elif [ ${mode} == 'run' ]; then
     container=$(echo "${containerlist}" | tail -n1 | awk '{print $1}')
     dshell ${container}
+else
+    echo "Unknown mode '${mode}' !?!?!"
+    exit 1
 fi

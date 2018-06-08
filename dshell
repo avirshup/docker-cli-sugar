@@ -6,13 +6,32 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source ${DIR}/d-utils
 
-if [ -x ${1} ]; then
-    echo "USAGE: dshell [image-or-container] [container options]"
+printusage() {
+    echo "USAGE: dshell [--socket] [--here] [image-or-container] [container options]"
+    exit 1
+}
+
+
+while [ ${1:0:2} == '--' ]; do
+  if [ "$1" == "--here" ]; then
+      args="$args -v $(pwd):/hostdir -w /hostdir"
+  elif [ "$1" == "--socket" ]; then
+      args="$args -v /var/run/docker.sock:/var/run/docker.sock"
+  else
+    printusage
+    exit 1
+  fi
+  shift
+done
+
+if [ -z ${1} ]; then
+    printusage
     exit 1
 fi
 
+
 objid=$1
-dockerargs=${@:2}
+dockerargs="$args ${@:2}"
 objtype=$(d-classify ${objid})
 
 case "${objtype}" in
@@ -22,7 +41,7 @@ case "${objtype}" in
     stopped*)
         imagename="image-from-${objid}"
         echocmd docker commit "${objid}" ${imagename}
-        launch-shell-in-image ${imagename} 
+        launch-shell-in-image ${imagename} ${dockerargs}
         ;;
     running*)
         echo "Running 'docker exec ${dockerargs} -it ${objid} sh -c "${BASH_OR_SH}"'"
