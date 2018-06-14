@@ -32,6 +32,18 @@ fi
 
 objid=$1
 dockerargs="$args ${@:2}"
+
+
+# For docker-compose - see if there's a container for this service
+if grep "^ *${objid}:" docker-compose.yml > /dev/null 2>&1; then
+    containername="$(basename $PWD)_${objid}_1"
+    if docker inspect "${containername}" > /dev/null 2>&1; then
+        echo "Using container '${containername}' for service '${objid}'"
+        objid=${containername}
+    fi
+fi
+
+
 objtype=$(d-classify ${objid})
 
 case "${objtype}" in
@@ -48,7 +60,7 @@ case "${objtype}" in
         docker exec ${dockerargs} -it ${objid} sh -c "${BASH_OR_SH}"
         ;;
     *)
-        echo Failed to classify \"${objtype}\"
+        echo "I don't know how to open \"${objid}\"; guessed type \"${objtype}\"."
         exit 1
         ;;
 esac
