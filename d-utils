@@ -1,6 +1,13 @@
 #!/bin/bash
 
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+DOCKER_SHELL_OPTS="-it --entrypoint=sh -v $DIR/share:/tmp/dutil:ro"
+
+# One liner for docker exec
 BASH_OR_SH="(command -v bash >/dev/null 2>&1) && echo 'shell: bash' && bash || (echo 'shell: sh' && sh)"
+
 
 echocmd() {
     echo Running \""$@"\"
@@ -8,12 +15,10 @@ echocmd() {
 }
 
 launch-shell-in-image() {
-    if [ -z "${1}" ]; then
-        echo "Usage: launch-shell-in-image [imgname] [...options to docker run]"
+    if [ -z "${2}" ]; then
+        echo "Usage: launch-shell-in-image [description] [imgname] [...options to docker run]"
         return 1
     fi
 
-    echo Running \'docker run -it --entrypoint=sh ${@:2} ${1} -c \"${BASH_OR_SH}\"\'
-    docker run -it ${@:2} ${1} sh -c "${BASH_OR_SH}"
-        
+    docker run ${DOCKER_SHELL_OPTS} -e CONTAINERID=$1 ${@:3} ${2} -c /tmp/dutil/launchscript.sh        
 }

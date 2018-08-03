@@ -48,12 +48,12 @@ objtype=$(d-classify ${objid})
 
 case "${objtype}" in
     image*)
-        launch-shell-in-image "${objid}" ${dockerargs}
+        launch-shell-in-image "image:\\033[35m${objid}\\033[0m" "${objid}" "${dockerargs} "
         ;;
     stopped*)
         imagename="image-from-${objid}"
         echocmd docker commit "${objid}" ${imagename}
-        launch-shell-in-image ${imagename} ${dockerargs}
+        launch-shell-in-image "fromctr:\\033[35m${objid}\\033[0m" "${imagename}" "${dockerargs}"
         ;;
     running*)
         echo "Running 'docker exec ${dockerargs} -it ${objid} sh -c "${BASH_OR_SH}"'"
