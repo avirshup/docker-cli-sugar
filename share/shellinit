@@ -7,4 +7,4 @@ if [ -z $CONTAINERID ]; then
     CONTAINERID='\h'
 fi
 
-export PS1="\\033\n[47;30m-->\\033[0m \\033[36m\w\\033[0m shell:\\033[32m$SHELL\\033[0m ${CONTAINERID} user:\\033[34m\u\\033[0m container:\\033[31m\h\\033[0m \n\\033[0m\\# "
+export PS1="\\033\n[47;30m-->\\033[0m \\033[36m\w\\033[0m shell:\\033[32m$SHELL\\033[0m ${CONTAINERID} user:\\033[34m\u\\033[0m container:\\033[31m\h\\033[0m\n# "
