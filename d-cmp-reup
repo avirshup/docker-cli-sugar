@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -x
+docker-compose up -d --build "$@" || exit 1
+docker-compose logs -f --tail=10 "$@"
+docker-compose ps

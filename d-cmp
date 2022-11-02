@@ -1,3 +1,11 @@
 #!/bin/sh
 
-docker-compose $@
+if (command -v docker-compose >>/dev/null); then
+    cmd="docker-compose"
+else
+    cmd="docker compose"
+fi
+
+set -x
+
+$cmd "$@"
